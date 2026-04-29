@@ -28,7 +28,9 @@ Workspace awal kosong, jadi project ini dibootstrap dari nol dan sekarang sudah 
 
 - Repo lokal sekarang sudah diinisialisasi dengan git branch `main`
 - Build release bisa dijalankan dengan `.\gradlew.bat assembleRelease --no-daemon`
+- Android App Bundle bisa dijalankan dengan `.\gradlew.bat bundleRelease --no-daemon`
 - Jika `keystore.properties` belum dibuat, output release yang dihasilkan akan berupa APK unsigned
 - Template signing disiapkan di `keystore.properties.example` untuk dipakai saat sudah punya keystore produksi
 - Metadata listing Play Store ada di `fastlane/metadata/android/en-US/`
 - Draft privacy policy ada di `docs/PRIVACY_POLICY.md`
+- Situs GitHub Pages untuk privacy policy disiapkan dari `docs/index.html`
