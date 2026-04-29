@@ -11,18 +11,17 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CameraAlt
-import androidx.compose.material.icons.filled.Explore
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -42,10 +41,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.qiblaarfinder.ui.MainUiState
 import com.qiblaarfinder.ui.components.CameraPreview
+import com.qiblaarfinder.ui.components.KaabaDirectionMarker
 import kotlin.math.abs
 
 @Composable
@@ -178,32 +179,43 @@ private fun OverlayGuidance(uiState: MainUiState, onBack: () -> Unit) {
                     shape = RoundedCornerShape(28.dp),
                 ),
         )
+        Box(
+            modifier = Modifier
+                .align(Alignment.Center)
+                .width(4.dp)
+                .size(height = 148.dp, width = 4.dp)
+                .background(
+                    color = if (uiState.isAligned) {
+                        MaterialTheme.colorScheme.primary.copy(alpha = 0.95f)
+                    } else {
+                        Color.White.copy(alpha = 0.52f)
+                    },
+                    shape = RoundedCornerShape(999.dp),
+                ),
+        )
+        Text(
+            text = "Atas HP",
+            modifier = Modifier
+                .align(Alignment.Center)
+                .offset(y = (-94).dp),
+            style = MaterialTheme.typography.bodyMedium,
+            color = Color.White,
+            fontWeight = FontWeight.Bold,
+        )
 
         if (delta != null) {
             Box(
                 modifier = Modifier
                     .align(Alignment.Center)
                     .offset(x = markerOffset)
-                    .background(
-                        color = if (uiState.isAligned) {
-                            MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.94f)
-                        } else {
-                            MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.94f)
-                        },
-                        shape = RoundedCornerShape(20.dp),
-                    )
-                    .padding(horizontal = 18.dp, vertical = 14.dp),
+                    .padding(vertical = 12.dp),
             ) {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Icon(Icons.Default.Explore, contentDescription = null)
-                    Text(
-                        text = "KA'BAH",
-                        fontWeight = FontWeight.Bold,
-                    )
-                }
+                KaabaDirectionMarker(
+                    aligned = uiState.isAligned,
+                    bodyWidth = 46.dp,
+                    bodyHeight = 52.dp,
+                    label = "KA'BAH",
+                )
             }
         }
 
@@ -223,17 +235,24 @@ private fun OverlayGuidance(uiState: MainUiState, onBack: () -> Unit) {
                 Text(
                     text = when {
                         delta == null -> "Lokasi dan heading sedang disiapkan."
-                        uiState.isAligned -> "Marker sudah di tengah. Kamera kamu hampir sejajar dengan arah qiblat."
+                        uiState.isAligned -> "Simbol Ka'bah sudah lurus dengan arah atas handphone."
                         delta > 0f -> "Geser pandangan ${delta.format(1)} derajat ke kanan sampai marker masuk area tengah."
                         else -> "Geser pandangan ${abs(delta).format(1)} derajat ke kiri sampai marker masuk area tengah."
                     },
                     style = MaterialTheme.typography.bodyLarge,
                     color = Color.White,
+                    textAlign = TextAlign.Center,
                 )
                 Text(
                     text = "Heading ${uiState.deviceHeading.format(1)} deg",
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color.White.copy(alpha = 0.8f),
+                )
+                Text(
+                    text = "Pegang handphone portrait lalu sejajarkan simbol Ka'bah dengan garis tengah vertikal.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.White.copy(alpha = 0.8f),
+                    textAlign = TextAlign.Center,
                 )
             }
         }
@@ -248,4 +267,3 @@ private fun Context.hasCameraPermission(): Boolean {
 }
 
 private fun Float.format(decimals: Int): String = "%.${decimals}f".format(this)
-

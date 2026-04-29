@@ -1,6 +1,7 @@
 package com.qiblaarfinder.ui.screens
 
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -64,6 +66,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.qiblaarfinder.domain.model.PrayerSchedule
 import com.qiblaarfinder.ui.MainUiState
+import com.qiblaarfinder.ui.components.KaabaDirectionMarker
 import kotlin.math.abs
 
 @Composable
@@ -249,10 +252,19 @@ private fun HeroCard(
 private fun CompassCard(uiState: MainUiState) {
     val angle by animateFloatAsState(
         targetValue = uiState.directionDelta ?: 0f,
+        animationSpec = spring(
+            dampingRatio = 0.82f,
+            stiffness = 210f,
+        ),
         label = "qibla_compass_angle",
     )
     val outlineColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.35f)
     val tickColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
+    val guideColor = if (uiState.isAligned) {
+        MaterialTheme.colorScheme.primary
+    } else {
+        MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+    }
 
     Card(
         shape = RoundedCornerShape(28.dp),
@@ -280,6 +292,7 @@ private fun CompassCard(uiState: MainUiState) {
             ) {
                 Canvas(modifier = Modifier.fillMaxSize()) {
                     val strokeWidth = 8.dp.toPx()
+                    val center = Offset(size.width / 2f, size.height / 2f)
                     drawCircle(
                         color = outlineColor,
                         style = Stroke(width = strokeWidth),
@@ -289,7 +302,6 @@ private fun CompassCard(uiState: MainUiState) {
                         val angleRad = Math.toRadians((index * 15).toDouble())
                         val startRadius = if (index % 6 == 0) size.minDimension * 0.36f else size.minDimension * 0.40f
                         val endRadius = size.minDimension * 0.45f
-                        val center = Offset(size.width / 2f, size.height / 2f)
                         val start = Offset(
                             x = center.x + startRadius * kotlin.math.sin(angleRad).toFloat(),
                             y = center.y - startRadius * kotlin.math.cos(angleRad).toFloat(),
@@ -306,30 +318,48 @@ private fun CompassCard(uiState: MainUiState) {
                             cap = StrokeCap.Round,
                         )
                     }
+
+                    drawLine(
+                        color = guideColor,
+                        start = center,
+                        end = Offset(center.x, size.height * 0.14f),
+                        strokeWidth = 5.dp.toPx(),
+                        cap = StrokeCap.Round,
+                    )
                 }
 
                 Text(
-                    text = "N",
+                    text = "Atas HP",
                     modifier = Modifier
                         .align(Alignment.TopCenter)
-                        .padding(top = 22.dp),
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.primary,
+                        .padding(top = 18.dp),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = guideColor,
                     fontWeight = FontWeight.Bold,
-                )
-
-                Icon(
-                    imageVector = Icons.Default.Explore,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(120.dp)
-                        .rotate(angle),
-                    tint = MaterialTheme.colorScheme.tertiary,
                 )
 
                 Box(
                     modifier = Modifier
-                        .size(18.dp)
+                        .fillMaxSize()
+                        .rotate(angle),
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .align(Alignment.TopCenter)
+                            .padding(top = 34.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        KaabaDirectionMarker(
+                            aligned = uiState.isAligned,
+                            showStem = true,
+                            stemHeight = 84.dp,
+                        )
+                    }
+                }
+
+                Box(
+                    modifier = Modifier
+                        .size(20.dp)
                         .clip(CircleShape)
                         .background(MaterialTheme.colorScheme.primary),
                 )
@@ -347,9 +377,15 @@ private fun CompassCard(uiState: MainUiState) {
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Text(
+                text = "Pegang handphone tegak portrait, lalu luruskan simbol Ka'bah ke arah atas HP.",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+            )
+            Text(
                 text = when {
                     uiState.directionDelta == null -> "Butuh lokasi untuk mengunci arah kiblat."
-                    uiState.isAligned -> "Pertahankan posisi ini. Kamu sudah menghadap kiblat."
+                    uiState.isAligned -> "Arah tegak handphone sudah lurus ke kiblat."
                     else -> guidanceText(uiState.directionDelta)
                 },
                 style = MaterialTheme.typography.bodyLarge,
