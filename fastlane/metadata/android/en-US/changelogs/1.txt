@@ -1,0 +1,5 @@
+Initial public release.
+
+- GPS, kompas, dan input manual untuk arah kiblat
+- Jadwal salat lokal dengan cache offline-friendly
+- AR overlay beta untuk panduan visual arah kiblat

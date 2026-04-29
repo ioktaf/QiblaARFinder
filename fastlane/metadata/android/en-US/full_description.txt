@@ -1,0 +1,16 @@
+Qibla AR Finder membantu pengguna menemukan arah kiblat dengan pengalaman yang cepat, ringan, dan tetap berguna saat koneksi terbatas.
+
+Fitur utama:
+- Perhitungan arah kiblat berbasis lokasi pengguna
+- Kompas 2D reaktif untuk koreksi arah secara real time
+- Input manual lewat nama kota atau koordinat
+- Cache lokasi terakhir untuk pengalaman offline-friendly
+- Jadwal salat yang dihitung langsung di perangkat
+- AR camera overlay untuk membantu orientasi arah kiblat
+
+Cocok dipakai saat:
+- sedang bepergian
+- berada di tempat baru
+- butuh arah kiblat cepat tanpa setup rumit
+
+Qibla AR Finder dirancang dengan pendekatan lokal di perangkat untuk meminimalkan ketergantungan pada server dan menjaga pengalaman tetap sederhana.
